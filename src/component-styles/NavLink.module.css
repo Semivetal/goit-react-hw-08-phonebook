@@ -1,0 +1,24 @@
+.navLink {
+  color: #000;
+  font-weight: 500;
+  font-size: 30px;
+  text-decoration: none;
+  padding: 5px 12px;
+  border-radius: 15px;
+  transition: all 250ms ease;
+}
+
+.navLink:not(:last-child) {
+  margin-right: 15px;
+}
+
+.navLink:hover,
+.navLink:focus {
+  background-color: #e09854;
+  color: #ffffff;
+  transition: all 250ms ease;
+}
+
+.navActiveLink {
+  color: #45c51e;
+}

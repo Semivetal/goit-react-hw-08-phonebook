@@ -1,0 +1,9 @@
+.container {
+  width: 95vw;
+  height: 100vh;
+  margin: 0 auto;
+  background-image: url('./bcg.jpeg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
