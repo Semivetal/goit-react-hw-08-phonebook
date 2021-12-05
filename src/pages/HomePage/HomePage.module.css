@@ -1,0 +1,11 @@
+.home {
+  min-width: 320px;
+  min-height: 100vh;
+  background-image: url(../../components/LoginForm/bcg.jpg);
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+.title {
+  color: #135c87;
+}

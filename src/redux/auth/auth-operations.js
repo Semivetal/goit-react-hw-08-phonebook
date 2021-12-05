@@ -1,97 +1,82 @@
-import axios from 'axios';
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import Axios from 'axios';
+import {
+  registerRequest,
+  registerSucces,
+  registerError,
+  loginRequest,
+  loginSucces,
+  loginError,
+  logoutRequest,
+  logoutSucces,
+  logoutError,
+  getCurrentUserRequest,
+  getCurrentUserSucces,
+  getCurrentUserError,
+} from './auth-actions';
 
-axios.defaults.baseURL =
-  'https://semivetal-goit-react-hw-08-phonebook.netlify.app/';
-// axios.defaults.baseURL = 'https://localhost:3000/';
+Axios.defaults.baseURL = 'https://connections-api.herokuapp.com';
 
 const token = {
   set(token) {
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    Axios.defaults.headers.common.Authorization = `Bearer ${token}`;
   },
   unset() {
-    axios.defaults.headers.common.Authorization = '';
+    Axios.defaults.headers.common.Authorization = '';
   },
 };
 
-export const register = createAsyncThunk(
-  'auth/register',
-  async (credentials, thunkAPI) => {
-    try {
-      const { data } = await axios.post('/users/signup', credentials);
-      token.set(data.token);
-      return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(
-        'Such username already exists, try another combination',
-      );
-    }
-  },
-);
-
-export const logIn = createAsyncThunk(
-  'auth/login',
-  async (credentials, thunkAPI) => {
-    try {
-      const { data } = await axios.post('/users/login', credentials);
-      token.set(data.token);
-      return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(
-        'Email or password is wrong, try another combination',
-      );
-    }
-  },
-);
-
-export const logOut = createAsyncThunk('auth/logout', async () => {
+const register = credentials => async dispatch => {
+  dispatch(registerRequest(credentials));
   try {
-    await axios.post('/users/logout');
-    token.unset();
+    const response = await Axios.post('/users/signup', credentials);
+    token.set(response.data.token);
+
+    dispatch(registerSucces(response.data));
   } catch (error) {
-    return new Error(error.massage);
+    dispatch(registerError(error.message));
   }
-});
+};
 
-export const fetchCurrentUser = createAsyncThunk(
-  'auth/refresh',
-  async (_, thunkAPI) => {
-    const state = thunkAPI.getState();
-    const persistedToken = state.auth.token;
+const login = credentials => async dispatch => {
+  dispatch(loginRequest(credentials));
+  try {
+    const response = await Axios.post('/users/login', credentials);
+    token.set(response.data.token);
 
-    if (persistedToken === null) {
-      console.log('there is not token');
-      return thunkAPI.rejectWithValue();
-    }
+    dispatch(loginSucces(response.data));
+  } catch (error) {
+    dispatch(loginError(error.message));
+  }
+};
 
-    token.set(persistedToken);
-    try {
-      const { data } = await axios.get('/users/current');
-      return data;
-    } catch (error) {
-      return error.massage;
-    }
-  },
-);
+const logout = () => async dispatch => {
+  dispatch(logoutRequest());
+  try {
+    await Axios.post('/users/logout');
+    token.unset();
+    dispatch(logoutSucces());
+  } catch (error) {
+    dispatch(logoutError(error.message));
+  }
+};
 
-/* export const fetchCurrentUser = createAsyncThunk(
-  'auth/refresh',
-  async (_, thunkAPI) => {
-    const state = thunkAPI.getState();
-    const persistedToken = state.token;
-    // const persistedToken = thunkAPI.getState(token);
+const getCurrentUser = () => async (dispatch, getState) => {
+  const {
+    auth: { token: persistedToken },
+  } = getState();
+  if (!persistedToken) {
+    return;
+  }
 
-    if (persistedToken === null) {
-      console.log('there is not token');
-      return thunkAPI.rejectWithValue();
-    }
+  token.set(persistedToken);
 
-    token.set(persistedToken);
-    try {
-      const { data } = await axios.get('/users/current');
-      return data;
-    } catch (error) {
-      return error.massage;
-    }
-  },
-); */
+  dispatch(getCurrentUserRequest());
+  try {
+    const response = await Axios.get('/users/current');
+    dispatch(getCurrentUserSucces(response.data));
+  } catch (error) {
+    dispatch(getCurrentUserError(error.message));
+  }
+};
+
+export { register, login, logout, getCurrentUser };
