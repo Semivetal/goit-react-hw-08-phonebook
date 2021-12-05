@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-axios.defaults.baseURL = 'https://connections-api.herokuapp.com';
+axios.defaults.baseURL =
+  'https://semivetal-goit-react-hw-08-phonebook.netlify.app/';
+// axios.defaults.baseURL = 'https://localhost:3000/';
 
 const token = {
   set(token) {
@@ -71,3 +73,25 @@ export const fetchCurrentUser = createAsyncThunk(
     }
   },
 );
+
+/* export const fetchCurrentUser = createAsyncThunk(
+  'auth/refresh',
+  async (_, thunkAPI) => {
+    const state = thunkAPI.getState();
+    const persistedToken = state.token;
+    // const persistedToken = thunkAPI.getState(token);
+
+    if (persistedToken === null) {
+      console.log('there is not token');
+      return thunkAPI.rejectWithValue();
+    }
+
+    token.set(persistedToken);
+    try {
+      const { data } = await axios.get('/users/current');
+      return data;
+    } catch (error) {
+      return error.massage;
+    }
+  },
+); */
